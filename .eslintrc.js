@@ -1,4 +1,7 @@
 module.exports = {
+  "globals": {
+    "cy": true
+  },
   "env": {
     "node": true,
     "browser": true,
