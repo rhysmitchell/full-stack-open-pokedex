@@ -31,8 +31,10 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
       - name: deploy
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && env.SKIP == 'false' }}
         uses: akhileshns/heroku-deploy@v3.9.9
+        env:
+          SKIP: ${{ contains( join( github.event.commits.*.message, ',' ), '#skip' ) }}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "full-stack-js-pokedex"
@@ -42,8 +44,9 @@ jobs:
           rollbackonhealthcheckfailed: true
       - uses: actions/checkout@v2
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && env.SKIP == 'false' }}
         uses: anothrNick/github-tag-action@1.33.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+          SKIP: ${{ contains( join( github.event.commits.*.message, ',' ), '#skip' ) }}
